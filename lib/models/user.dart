@@ -9,21 +9,20 @@ class User {
     required this.password,
   });
 
-  // Convert a User object to a Map
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'] as int?,
+      username: map['username'] as String,
+      password: map['password'] as String,
+    );
+  }
+
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final Map<String, dynamic> map = {
       'username': username,
       'password': password,
     };
-  }
 
-  // Create a User object from a Map
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      id: map['id'],
-      username: map['username'],
-      password: map['password'],
-    );
+    return map;
   }
 }

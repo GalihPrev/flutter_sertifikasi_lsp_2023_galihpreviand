@@ -1,6 +1,8 @@
-// ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables
-
 import 'package:flutter/material.dart';
+import '../DBHelper/dbhelper.dart'; // Import your DBHelper class
+import 'package:quickalert/quickalert.dart';
+
+import 'login.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -12,17 +14,15 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _repeatPasswordController =
-      TextEditingController();
-
-  bool _isPasswordMatch = true;
   bool _isPasswordVisible = false;
-  bool _isPasswordVisible2 = false;
+  final DBHelper _dbHelper = DBHelper(); // Create an instance of DBHelper
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registrasi'),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -33,7 +33,7 @@ class _RegisterState extends State<Register> {
               controller: _usernameController,
               decoration: const InputDecoration(labelText: 'Username'),
             ),
-           const SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
@@ -53,54 +53,78 @@ class _RegisterState extends State<Register> {
                 ),
               ),
             ),
-           const SizedBox(height: 20.0),
-            TextField(
-              controller: _repeatPasswordController,
-              obscureText: !_isPasswordVisible2,
-              decoration: InputDecoration(
-                labelText: 'Repeat Password',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible2
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible2 = !_isPasswordVisible2;
-                    });
-                  },
-                ),
+            TextButton(
+              onPressed: () {
+                // Navigasi ke halaman registrasi ketika tombol ditekan
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const LoginPage()), // Gantilah RegisterPage dengan nama halaman registrasi Anda
+                );
+              },
+              child: const Text(
+                'Sudah punya akun? Login',
+                style: TextStyle(color: Colors.blue),
               ),
             ),
-            const SizedBox(height: 20.0),
-            !_isPasswordMatch
-                ? const Text(
-                    'Password harus sama dengan Repeat Password',
-                    style: TextStyle(color: Colors.red),
-                  )
-                : Container(),
             ElevatedButton(
-              onPressed: () {
-                // Validasi apakah password sama dengan repeat password
-                if (_passwordController.text !=
-                    _repeatPasswordController.text) {
-                  setState(() {
-                    _isPasswordMatch = false;
-                  });
+              onPressed: () async {
+                // Ambil nilai dari controller
+                final username = _usernameController.text;
+                final password = _passwordController.text;
+
+                // Periksa apakah username dan password tidak kosong
+                if (username.isNotEmpty && password.isNotEmpty) {
+                  try {
+                    // Panggil metode register dari DBHelper
+                    await _dbHelper.register(username, password);
+                    // Registrasi berhasil, Anda dapat menampilkan pesan sukses
+                    _showSuccessAlert(username);
+                  } catch (e) {
+                    _showErrorAlert(context);
+                    _usernameController.clear();
+                    _passwordController.clear();
+                  }
                 } else {
-                  // Password sesuai, lanjutkan dengan proses registrasi
-                  setState(() {
-                    _isPasswordMatch = true;
-                  });
-                  // Implementasi logika registrasi Anda di sini
+                  // Tangani kasus jika username atau password kosong
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Username and password cannot be empty.'),
+                    ),
+                  );
                 }
               },
-              child:const Text('Register'),
+              child: const Text('Register'),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showSuccessAlert(String username) {
+    QuickAlert.show(
+      context: context,
+      title: "Registration Successful",
+      text: "Welcome, $username",
+      type: QuickAlertType.success,
+    ).then((_) {
+      // You can navigate to the login page or any other page here
+      // For example, you can use Navigator to go back to the login page:
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    });
+  }
+
+  void _showErrorAlert(BuildContext context) {
+    QuickAlert.show(
+      context: context,
+      title: "Registration Gagal",
+      text: "Username already exists",
+      type: QuickAlertType.error,
     );
   }
 }

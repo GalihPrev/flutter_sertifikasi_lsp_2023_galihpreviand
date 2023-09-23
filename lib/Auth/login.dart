@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/home.dart';
+
 import 'package:quickalert/quickalert.dart';
+
+import '../DBHelper/dbhelper.dart';
+import 'register.dart'; // Import your DBHelper class
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -13,8 +17,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // Create GlobalKey instances for resetting text fields
   final GlobalKey<FormFieldState<String>> _usernameKey = GlobalKey();
   final GlobalKey<FormFieldState<String>> _passwordKey = GlobalKey();
 
@@ -23,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Selamat Datang'),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -41,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               TextFormField(
-                key: _usernameKey, // Assign GlobalKey to the username field
+                key: _usernameKey,
                 controller: _usernameController,
                 decoration: const InputDecoration(
                   labelText: 'Username',
@@ -49,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20.0),
               TextFormField(
-                key: _passwordKey, // Assign GlobalKey to the password field
+                key: _passwordKey,
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
@@ -69,18 +72,38 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 20.0),
-              ElevatedButton(
+              TextButton(
                 onPressed: () {
-                  if (_usernameController.text == "user" &&
-                      _passwordController.text == "user") {
-                    // Show a success alert with the username
-                    _showSuccessAlert(context, _usernameController.text);
+                  // Navigasi ke halaman registrasi ketika tombol ditekan
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const Register()), // Gantilah RegisterPage dengan nama halaman registrasi Anda
+                  );
+                },
+                child: const Text(
+                  'Belum punya akun? Registrasi',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final username = _usernameController.text;
+                  final password = _passwordController.text;
+                  final dbHelper = DBHelper();
+
+                  final isAuthenticated =
+                      await dbHelper.login(username, password);
+
+                  if (isAuthenticated) {
+                    _showSuccessAlert(context, username);
                   } else {
                     _showErrorAlert(context);
 
-                    // Reset text fields
-                    _usernameKey.currentState?.reset();
-                    _passwordKey.currentState?.reset();
+                    // Mengosongkan kembali field username dan password
+                    _usernameController.clear();
+                    _passwordController.clear();
                   }
                 },
                 style: ButtonStyle(
@@ -111,13 +134,13 @@ class _LoginPageState extends State<LoginPage> {
       );
     });
   }
-}
 
-void _showErrorAlert(BuildContext context) {
-  QuickAlert.show(
-    context: context,
-    title: "Login Gagal",
-    text: "Username atau password salah.",
-    type: QuickAlertType.error,
-  );
+  void _showErrorAlert(BuildContext context) {
+    QuickAlert.show(
+      context: context,
+      title: "Login Gagal",
+      text: "Username atau password salah.",
+      type: QuickAlertType.error,
+    );
+  }
 }

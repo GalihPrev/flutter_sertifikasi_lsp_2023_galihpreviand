@@ -1,8 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../models/user.dart';
-
 class DBHelper {
   static final DBHelper _instance = DBHelper._internal();
 
@@ -36,14 +34,6 @@ class DBHelper {
         ''');
 
         await db.execute('''
-          CREATE TABLE register(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            password TEXT
-          )
-        ''');
-
-        await db.execute('''
           CREATE TABLE pengeluaran(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tanggal TEXT,
@@ -62,6 +52,31 @@ class DBHelper {
         ''');
       },
     );
+  }
+
+  // Register user
+  Future<void> register(String username, String password) async {
+    final db = await database;
+
+    // Check if the username already exists in the "login" table
+    final existingUser = await db.query(
+      'login',
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+
+    if (existingUser.isEmpty) {
+      // If username does not exist, insert the new user into the "login" table
+      await db.insert(
+        'login',
+        {
+          'username': username,
+          'password': password,
+        },
+      );
+    } else {
+      throw Exception('Username already exists');
+    }
   }
 
   // Login user
