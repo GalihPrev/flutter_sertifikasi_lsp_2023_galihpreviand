@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                       const Size(double.infinity, 40.0)),
                 ),
                 child: const Text('Login'),
-              )
+              ),
             ],
           ),
         ),
