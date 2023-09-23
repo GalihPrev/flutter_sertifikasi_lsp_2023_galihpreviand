@@ -64,47 +64,18 @@ class DBHelper {
     );
   }
 
-  //Login user
-
-  // Insert user from models User
-
-  Future<int> insertUser(User user) async {
+  // Login user
+  Future<bool> login(String username, String password) async {
     final db = await database;
-    return await db.insert('login', user.toMap());
-  }
 
-  // Detele User
+    // Query the "login" table to check if the provided username and password match
+    final result = await db.query(
+      'login',
+      where: 'username = ? AND password = ?',
+      whereArgs: [username, password],
+    );
 
-  Future<int> deleteUser(int id) async {
-    final db = await database;
-    return await db.delete('login', where: 'id = ?', whereArgs: [id]);
-  }
-
-  
-  //  metode untuk operasi CRUD
-
-  // Create (Insert) Data:
-  Future<int> insertLogin(Map<String, dynamic> loginData) async {
-    final db = await database;
-    return await db.insert('login', loginData);
-  }
-
-//  Read (Select) Data:
-  Future<List<Map<String, dynamic>>> getLoginList() async {
-    final db = await database;
-    return await db.query('login');
-  }
-
-// Update Data:
-  Future<int> updateLogin(Map<String, dynamic> loginData) async {
-    final db = await database;
-    return await db.update('login', loginData,
-        where: 'id = ?', whereArgs: [loginData['id']]);
-  }
-
-// Delete Data:
-  Future<int> deleteLogin(int id) async {
-    final db = await database;
-    return await db.delete('login', where: 'id = ?', whereArgs: [id]);
+    // If a record with the given username and password is found, return true (authenticated)
+    return result.isNotEmpty;
   }
 }

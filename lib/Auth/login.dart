@@ -1,6 +1,6 @@
-// ignore_for_file: camel_case_types, prefer_typing_uninitialized_variables
-
 import 'package:flutter/material.dart';
+import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/home.dart';
+import 'package:quickalert/quickalert.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -11,11 +11,18 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // Create GlobalKey instances for resetting text fields
+  final GlobalKey<FormFieldState<String>> _usernameKey = GlobalKey();
+  final GlobalKey<FormFieldState<String>> _passwordKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Selamat Datang '),
+        title: const Text('Selamat Datang'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -33,13 +40,17 @@ class _LoginPageState extends State<LoginPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const TextField(
-                decoration: InputDecoration(
+              TextFormField(
+                key: _usernameKey, // Assign GlobalKey to the username field
+                controller: _usernameController,
+                decoration: const InputDecoration(
                   labelText: 'Username',
                 ),
               ),
               const SizedBox(height: 20.0),
-              TextField(
+              TextFormField(
+                key: _passwordKey, // Assign GlobalKey to the password field
+                controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -59,10 +70,23 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  if (_usernameController.text == "user" &&
+                      _passwordController.text == "user") {
+                    // Show a success alert with the username
+                    _showSuccessAlert(context, _usernameController.text);
+                  } else {
+                    _showErrorAlert(context);
+
+                    // Reset text fields
+                    _usernameKey.currentState?.reset();
+                    _passwordKey.currentState?.reset();
+                  }
+                },
                 style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(
-                      const Size(double.infinity, 40.0)),
+                    const Size(double.infinity, 40.0),
+                  ),
                 ),
                 child: const Text('Login'),
               ),
@@ -72,4 +96,28 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  void _showSuccessAlert(BuildContext context, String username) {
+    QuickAlert.show(
+      context: context,
+      title: "Login berhasil",
+      text: "Selamat datang, $username",
+      type: QuickAlertType.success,
+    ).then((_) {
+      // Navigate to the home page when OK is pressed
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    });
+  }
+}
+
+void _showErrorAlert(BuildContext context) {
+  QuickAlert.show(
+    context: context,
+    title: "Login Gagal",
+    text: "Username atau password salah.",
+    type: QuickAlertType.error,
+  );
 }
