@@ -1,6 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import '../models/transaksi.dart';
+
 class DBHelper {
   static final DBHelper _instance = DBHelper._internal();
 
@@ -34,22 +36,14 @@ class DBHelper {
         ''');
 
         await db.execute('''
-          CREATE TABLE pengeluaran(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tanggal TEXT,
-            keterangan TEXT,
-            jumlah REAL
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE pemasukkan(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tanggal TEXT,
-            keterangan TEXT,
-            jumlah REAL
-          )
-        ''');
+  CREATE TABLE transaksi(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tanggal TEXT,
+    keterangan TEXT,
+    jenis TEXT,
+    jumlah REAL
+  )
+''');
       },
     );
   }
@@ -92,5 +86,48 @@ class DBHelper {
 
     // If a record with the given username and password is found, return true (authenticated)
     return result.isNotEmpty;
+  }
+
+  // Menambahkan transaksi (baik pemasukan maupun pengeluaran)
+  Future<void> addTransaksi(Map<String, dynamic> transaksi) async {
+    final db = await database;
+    await db.insert('transaksi', transaksi);
+  }
+
+  // Mengambil semua transaksi (termasuk pemasukan dan pengeluaran)
+  // Future<List<Map<String, dynamic>>> getTransaksi() async {
+  //   final db = await database;
+  //   return await db.query('transaksi');
+  // }
+  // Mendapatkan daftar transaksi dari tabel 'transaksi'
+  Future<List<Transaksi>> getTransaksiList() async {
+    final db = await database;
+    final transaksiListMap = await db.query('transaksi');
+
+    // Konversi daftar transaksi dalam bentuk Map menjadi List<Transaksi>
+    return transaksiListMap
+        .map((transaksiMap) => Transaksi.fromMap(transaksiMap))
+        .toList();
+  }
+
+  // Memperbarui transaksi (baik pemasukan maupun pengeluaran)
+  Future<void> updateTransaksi(Map<String, dynamic> transaksi) async {
+    final db = await database;
+    await db.update(
+      'transaksi',
+      transaksi,
+      where: 'id = ?',
+      whereArgs: [transaksi['id']],
+    );
+  }
+
+  // Menghapus transaksi (baik pemasukan maupun pengeluaran)
+  Future<void> deleteTransaksi(int id) async {
+    final db = await database;
+    await db.delete(
+      'transaksi',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

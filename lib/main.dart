@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/detailCashFlow.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/home.dart';
-import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/tambahPemasukan.dart';
+import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/tambahTransaksi.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/tambahPengeluaran.dart';
-
 
 import 'Auth/login.dart';
 import 'view/pengaturan.dart';
-
 
 void main() => runApp(MyApp());
 

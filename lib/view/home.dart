@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'tambahTransaksi.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -24,8 +27,8 @@ class _HomePageState extends State<HomePage> {
         child: Center(
           child: Column(
             children: [
-              Column(
-                children: const [
+              const Column(
+                children: [
                   Padding(
                     padding: EdgeInsets.only(top: 20),
                     child: Text(
@@ -37,18 +40,81 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 8.0),
-                  Text(
-                    'Pengeluaran',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    'Pemasukkan',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
+                  // Card for Pengeluaran
+                  Row(
+                    children: [
+                      // Card for Pengeluaran
+                      Card(
+                        elevation: 5,
+                        margin: const EdgeInsets.all(10),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.angleDoubleDown,
+                                    size: 24.0,
+                                    color: Colors.red,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Pengeluaran',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              // Add your description, date, and amount for Pengeluaran here
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(width: 10),
+
+                      // Card for Pemasukkan
+                      Card(
+                        elevation: 5,
+                        margin: const EdgeInsets.all(10),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.angleDoubleUp,
+                                    size: 24.0,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Pemasukkan',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              // Add your description, date, and amount for Pemasukkan here
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -112,23 +178,23 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Page1()),
+                                      builder: (context) =>
+                                          TransaksiPage(), // Navigate to the TambahTransaksi page
+                                    ),
                                   );
                                 },
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SizedBox(
-                                      width: iconSize,
-                                      height: iconSize,
-                                      child: Icon(
-                                        Icons.home,
-                                        size: iconSize,
-                                      ),
+                                    // Replace the icon with a transaction-related icon
+                                    Icon(
+                                      Icons
+                                          .attach_money, // Use an appropriate transaction-related icon
+                                      size: iconSize,
                                     ),
                                     const SizedBox(height: 8.0),
                                     const Text(
-                                      'Home',
+                                      'Tambah Transaksi', // Change the text to indicate adding transactions
                                       style: TextStyle(fontSize: 16.0),
                                     ),
                                   ],
@@ -142,13 +208,13 @@ class _HomePageState extends State<HomePage> {
                             width: 150.0,
                             height: 150.0,
                             child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Page2()),
-                                );
-                              },
+                              // onTap: () {
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => Page2()),
+                              //   );
+                              // },
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -184,13 +250,13 @@ class _HomePageState extends State<HomePage> {
                                 width: 150.0,
                                 height: 150.0,
                                 child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Page3()),
-                                    );
-                                  },
+                                  // onTap: () {
+                                  //   Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) => Page3()),
+                                  //   );
+                                  // },
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -218,13 +284,13 @@ class _HomePageState extends State<HomePage> {
                               width: 150.0,
                               height: 150.0,
                               child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Page4()),
-                                  );
-                                },
+                                // onTap: () {
+                                //   Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) => Page4()),
+                                //   );
+                                // },
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -255,62 +321,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class Page1 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Halaman 1'),
-      ),
-      body: Center(
-        child: Text('Ini adalah Halaman 1'),
-      ),
-    );
-  }
-}
-
-class Page2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Halaman 2'),
-      ),
-      body: Center(
-        child: Text('Ini adalah Halaman 2'),
-      ),
-    );
-  }
-}
-
-class Page3 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Halaman 3'),
-      ),
-      body: Center(
-        child: Text('Ini adalah Halaman 3'),
-      ),
-    );
-  }
-}
-
-class Page4 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Halaman 4'),
-      ),
-      body: Center(
-        child: Text('Ini adalah Halaman 4'),
       ),
     );
   }
