@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/home.dart';
-
+import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
-
 import '../DBHelper/dbhelper.dart';
+import '../models/transaksi.dart';
 import 'register.dart'; // Import your DBHelper class
+import '../providers/user_provider.dart'; // Import UserProvider
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -19,6 +20,9 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _usernameKey = GlobalKey();
   final GlobalKey<FormFieldState<String>> _passwordKey = GlobalKey();
+
+  UserProvider _userProvider =
+      UserProvider(); // Create an instance of UserProvider
 
   @override
   Widget build(BuildContext context) {
@@ -93,15 +97,18 @@ class _LoginPageState extends State<LoginPage> {
                   final password = _passwordController.text;
                   final dbHelper = DBHelper();
 
-                  final isAuthenticated =
-                      await dbHelper.login(username, password);
+                  await _userProvider
+                      .fetchUserByUsername(username); // Fetch user data
 
-                  if (isAuthenticated) {
-                    _showSuccessAlert(context, username);
+                  if (_userProvider.user != null &&
+                      _userProvider.user!.password == password) {
+                    final userProvider =
+                        Provider.of<UserProvider>(context, listen: false);
+                    userProvider.fetchUserByUsername(username);
+                    final transaksiList = await dbHelper.getTransaksiList();
+                    _showSuccessAlert(context, username, transaksiList);
                   } else {
                     _showErrorAlert(context);
-
-                    // Mengosongkan kembali field username dan password
                     _usernameController.clear();
                     _passwordController.clear();
                   }
@@ -120,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _showSuccessAlert(BuildContext context, String username) {
+  void _showSuccessAlert(
+      BuildContext context, String username, List<Transaksi> transaksiList) {
     QuickAlert.show(
       context: context,
       title: "Login berhasil",
@@ -130,7 +138,12 @@ class _LoginPageState extends State<LoginPage> {
       // Navigate to the home page when OK is pressed
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(
+          builder: (context) => HomePage(
+            transaksiList: transaksiList,
+            // Pass UserProvider to HomePage
+          ),
+        ),
       );
     });
   }

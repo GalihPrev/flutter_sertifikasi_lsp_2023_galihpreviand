@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import '../models/transaksi.dart';
+import '../models/user.dart';
 
 class DBHelper {
   static final DBHelper _instance = DBHelper._internal();
@@ -44,6 +45,8 @@ class DBHelper {
     jumlah REAL
   )
 ''');
+        await db.insert(
+            "login", {'username': 'user', 'password': 'user'});
       },
     );
   }
@@ -84,8 +87,56 @@ class DBHelper {
       whereArgs: [username, password],
     );
 
-    // If a record with the given username and password is found, return true (authenticated)
     return result.isNotEmpty;
+  }
+
+  // Change user password
+  Future<int> changePassword(String username, String password) async {
+    Database db = await database;
+
+    int result = await db.rawUpdate(
+        'UPDATE login SET password = ? WHERE username = ?',
+        [password, username]);
+    return result;
+  }
+
+  // Future<void> changeUserPassword(String username, String newPassword) async {
+  //   final db = await database;
+
+  //   // Periksa apakah password saat ini sesuai sebelum mengganti password
+  //   final result = await db.query(
+  //     'login',
+  //     where: 'username = ?',
+  //     whereArgs: [username],
+  //   );
+
+  //   if (result.isNotEmpty) {
+  //     // Password saat ini sesuai, maka perbarui password
+  //     await db.update(
+  //       'login',
+  //       {'password': newPassword},
+  //       where: 'username = ?',
+  //       whereArgs: [username],
+  //     );
+  //   } else {
+  //     throw Exception('Username not found');
+  //   }
+  // }
+
+  // Mengambil pengguna berdasarkan username
+  Future<User?> getUserByUsername(String username) async {
+    final db = await database;
+    final result = await db.query(
+      'login',
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+
+    if (result.isNotEmpty) {
+      return User.fromMap(result.first);
+    } else {
+      return null;
+    }
   }
 
   // Menambahkan transaksi (baik pemasukan maupun pengeluaran)

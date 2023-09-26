@@ -76,6 +76,12 @@ class _TransaksiPageState extends State<TransaksiPage> {
       });
 
       _showSuccessAlert(context, jenis);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(transaksiList: transaksiList),
+        ),
+      );
 
       nominalController.clear();
       keteranganController.clear();
@@ -99,8 +105,8 @@ class _TransaksiPageState extends State<TransaksiPage> {
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    const HomePage()), // Gantilah RegisterPage dengan nama halaman registrasi Anda
+              builder: (context) => HomePage(transaksiList: transaksiList),
+            ),
           ),
         ),
       ),
@@ -353,7 +359,7 @@ class _TransaksiPageState extends State<TransaksiPage> {
     );
   }
 
-  void _showSuccessAlert(BuildContext context, String jenisTransaksi) {
+ void _showSuccessAlert(BuildContext context, String jenisTransaksi) {
     String transaksiText =
         jenisTransaksi == 'Pemasukan' ? 'Pemasukan' : 'Pengeluaran';
     QuickAlert.show(
@@ -374,7 +380,6 @@ class _TransaksiPageState extends State<TransaksiPage> {
       );
     });
   }
-
   void _showErrorAlert(BuildContext context) {
     QuickAlert.show(
       context: context,

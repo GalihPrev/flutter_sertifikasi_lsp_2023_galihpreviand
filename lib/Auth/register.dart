@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../DBHelper/dbhelper.dart'; // Import your DBHelper class
+import '../DBHelper/dbhelper.dart';
 import 'package:quickalert/quickalert.dart';
-
+import '../models/user.dart';
+import '../providers/user_provider.dart';
 import 'login.dart';
 
 class Register extends StatefulWidget {
@@ -15,7 +16,8 @@ class _RegisterState extends State<Register> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  final DBHelper _dbHelper = DBHelper(); // Create an instance of DBHelper
+  final DBHelper _dbHelper = DBHelper();
+  final UserProvider _userProvider = UserProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +60,7 @@ class _RegisterState extends State<Register> {
                 // Navigasi ke halaman registrasi ketika tombol ditekan
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const LoginPage()), // Gantilah RegisterPage dengan nama halaman registrasi Anda
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
               child: const Text(
@@ -70,16 +70,17 @@ class _RegisterState extends State<Register> {
             ),
             ElevatedButton(
               onPressed: () async {
-                // Ambil nilai dari controller
                 final username = _usernameController.text;
                 final password = _passwordController.text;
 
-                // Periksa apakah username dan password tidak kosong
                 if (username.isNotEmpty && password.isNotEmpty) {
                   try {
-                    // Panggil metode register dari DBHelper
                     await _dbHelper.register(username, password);
-                    // Registrasi berhasil, Anda dapat menampilkan pesan sukses
+
+                    final user = User(
+                        username, password, username: ''); 
+                    _userProvider.setUser(user);
+
                     _showSuccessAlert(username);
                   } catch (e) {
                     _showErrorAlert(context);
@@ -87,7 +88,6 @@ class _RegisterState extends State<Register> {
                     _passwordController.clear();
                   }
                 } else {
-                  // Tangani kasus jika username atau password kosong
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Username and password cannot be empty.'),
@@ -95,6 +95,11 @@ class _RegisterState extends State<Register> {
                   );
                 }
               },
+              style: ButtonStyle(
+                minimumSize: MaterialStateProperty.all(
+                  const Size(double.infinity, 40.0),
+                ),
+              ),
               child: const Text('Register'),
             ),
           ],
@@ -110,8 +115,7 @@ class _RegisterState extends State<Register> {
       text: "Welcome, $username",
       type: QuickAlertType.success,
     ).then((_) {
-      // You can navigate to the login page or any other page here
-      // For example, you can use Navigator to go back to the login page:
+      // Navigasi ke halaman login atau halaman lain jika perlu
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),

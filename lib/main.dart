@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/detailCashFlow.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/home.dart';
+import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/profile.dart';
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/tambahTransaksi.dart';
-import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/view/tambahPengeluaran.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 
 import 'Auth/login.dart';
-import 'view/pengaturan.dart';
+import 'providers/user_provider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(
+    ChangeNotifierProvider<UserProvider>(
+      create: (context) => UserProvider(), // Replace with your actual provider
+      child: MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override
