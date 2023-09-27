@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import '../DBHelper/dbhelper.dart';
 import '../models/transaksi.dart';
-import 'register.dart'; // Import your DBHelper class
-import '../providers/user_provider.dart'; // Import UserProvider
+import 'register.dart';
+import '../providers/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,9 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _usernameKey = GlobalKey();
   final GlobalKey<FormFieldState<String>> _passwordKey = GlobalKey();
-
-  UserProvider _userProvider =
-      UserProvider(); // Create an instance of UserProvider
+  final UserProvider _userProvider = UserProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset('assets/images/logo.jpeg'),
+              Image.asset('assets/images/finance.png'),
               const SizedBox(height: 20.0),
               const Text(
                 "asdasasd",
@@ -78,12 +76,10 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20.0),
               TextButton(
                 onPressed: () {
-                  // Navigasi ke halaman registrasi ketika tombol ditekan
+                  // Navigasi ke halaman registrasi
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const Register()), // Gantilah RegisterPage dengan nama halaman registrasi Anda
+                    MaterialPageRoute(builder: (context) => const Register()),
                   );
                 },
                 child: const Text(
@@ -97,9 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                   final password = _passwordController.text;
                   final dbHelper = DBHelper();
 
-                  await _userProvider
-                      .fetchUserByUsername(username); // Fetch user data
-
+                  await _userProvider.fetchUserByUsername(username);
                   if (_userProvider.user != null &&
                       _userProvider.user!.password == password) {
                     final userProvider =
@@ -135,13 +129,11 @@ class _LoginPageState extends State<LoginPage> {
       text: "Selamat datang, $username",
       type: QuickAlertType.success,
     ).then((_) {
-      // Navigate to the home page when OK is pressed
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => HomePage(
             transaksiList: transaksiList,
-            // Pass UserProvider to HomePage
           ),
         ),
       );
