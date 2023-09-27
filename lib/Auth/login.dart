@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormFieldState<String>> _usernameKey = GlobalKey();
   final GlobalKey<FormFieldState<String>> _passwordKey = GlobalKey();
   final UserProvider _userProvider = UserProvider();
+  String NamaAplikasi = "SmartSpend";
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +38,9 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               Image.asset('assets/images/finance.png'),
               const SizedBox(height: 20.0),
-              const Text(
-                "asdasasd",
-                style: TextStyle(
+              Text(
+                NamaAplikasi,
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
