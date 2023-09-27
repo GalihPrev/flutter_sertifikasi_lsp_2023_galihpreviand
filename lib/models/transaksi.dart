@@ -1,12 +1,12 @@
 class Transaksi {
-  int? id; // Menggunakan tipe int? agar id dapat menjadi null
+  int? id; 
   String tanggal;
   String keterangan;
-  String jenis; // "Pemasukan" atau "Pengeluaran"
+  String jenis; 
   double jumlah;
 
   Transaksi({
-    this.id, // Menghapus required pada id
+    this.id,
     required this.tanggal,
     required this.keterangan,
     required this.jenis,
@@ -16,7 +16,7 @@ class Transaksi {
   // Konversi objek Transaksi menjadi Map untuk menyimpan ke database
   Map<String, dynamic> toMap() {
     return {
-      'id': id, // Biarkan database menangani nilai id
+      'id': id, 
       'tanggal': tanggal,
       'keterangan': keterangan,
       'jenis': jenis,

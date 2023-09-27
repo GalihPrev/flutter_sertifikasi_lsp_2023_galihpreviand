@@ -3,22 +3,22 @@ import 'package:flutter/foundation.dart';
 class User extends ChangeNotifier {
   int? _id;
   String? _username;
-  String? _password; // Menggunakan nullable String untuk password
+  String? _password; 
 
-  int? get id => _id; // Perbaiki getter untuk id
+  int? get id => _id; 
   String? get username => _username;
   set username(String? value) {
-    this._username = value;
+    _username = value;
     notifyListeners();
   }
 
   String? get password => _password;
   set password(String? value) {
-    this._password = value;
+    _password = value;
     notifyListeners();
   }
 
-  User(this._username, this._password, {required String username}); // Hapus argumen opsional
+  User(this._username, this._password, {required String username}); 
 
   User.fromMap(Map<String, dynamic> map) {
     _id = map['id'];

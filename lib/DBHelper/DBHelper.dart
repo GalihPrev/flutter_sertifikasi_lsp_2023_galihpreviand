@@ -45,8 +45,7 @@ class DBHelper {
     jumlah REAL
   )
 ''');
-        await db.insert(
-            "login", {'username': 'user', 'password': 'user'});
+        await db.insert("login", {'username': 'user', 'password': 'user'});
       },
     );
   }
@@ -63,7 +62,7 @@ class DBHelper {
     );
 
     if (existingUser.isEmpty) {
-      // If username does not exist, insert the new user into the "login" table
+      // C
       await db.insert(
         'login',
         {
@@ -80,7 +79,7 @@ class DBHelper {
   Future<bool> login(String username, String password) async {
     final db = await database;
 
-    // Query the "login" table to check if the provided username and password match
+    // tabel "login" untuk memeriksa apakah nama pengguna dan kata sandi yang diberikan cocok
     final result = await db.query(
       'login',
       where: 'username = ? AND password = ?',
@@ -100,28 +99,6 @@ class DBHelper {
     return result;
   }
 
-  // Future<void> changeUserPassword(String username, String newPassword) async {
-  //   final db = await database;
-
-  //   // Periksa apakah password saat ini sesuai sebelum mengganti password
-  //   final result = await db.query(
-  //     'login',
-  //     where: 'username = ?',
-  //     whereArgs: [username],
-  //   );
-
-  //   if (result.isNotEmpty) {
-  //     // Password saat ini sesuai, maka perbarui password
-  //     await db.update(
-  //       'login',
-  //       {'password': newPassword},
-  //       where: 'username = ?',
-  //       whereArgs: [username],
-  //     );
-  //   } else {
-  //     throw Exception('Username not found');
-  //   }
-  // }
 
   // Mengambil pengguna berdasarkan username
   Future<User?> getUserByUsername(String username) async {
@@ -144,11 +121,6 @@ class DBHelper {
     final db = await database;
     await db.insert('transaksi', transaksi);
   }
-
-  // Mengambil semua transaksi (termasuk pemasukan dan pengeluaran)
-  // Future<List<Map<String, dynamic>>> getTransaksi() async {
-  //   final db = await database;
-  //   return await db.query('transaksi');
   // }
   // Mendapatkan daftar transaksi dari tabel 'transaksi'
   Future<List<Transaksi>> getTransaksiList() async {
