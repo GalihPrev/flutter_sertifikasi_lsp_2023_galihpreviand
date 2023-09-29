@@ -3,6 +3,7 @@ import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/DBHelper/DBHelper.dar
 import 'package:flutter_sertifikasi_lsp_2023_galihpreviand/models/transaksi.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'home.dart';
 import 'tambahTransaksi.dart';
 
 class DetailCashFlow extends StatefulWidget {
@@ -16,22 +17,18 @@ class DetailCashFlow extends StatefulWidget {
     required this.transaksiList,
     required this.transaksi,
   }) : super(key: key) {
-    // Inisialisasi allTransaksi dengan daftar transaksi yang ada atau daftar kosong
     allTransaksi = transaksiList != null && transaksiList.isNotEmpty
         ? [...transaksiList]
         : <Transaksi>[];
 
-    // Cek apakah transaksi yang baru sudah ada dalam daftar
     final isDuplicate =
         transaksiList?.any((t) => t.id == transaksi.id) ?? false;
 
-    // Jika tidak ada, tambahkan transaksi yang baru
     if (!isDuplicate) {
       allTransaksi.add(transaksi);
     }
   }
 
-  // Tambahkan variabel allTransaksi
   late List<Transaksi> allTransaksi;
 
   @override
@@ -39,22 +36,35 @@ class DetailCashFlow extends StatefulWidget {
 }
 
 class _DetailCashFlowState extends State<DetailCashFlow> {
+  final DBHelper dbHelper = DBHelper();
+  List<Transaksi> transaksiList = [];
+
+  Future<List<Transaksi>> fetchTransaksiList() async {
+    return await dbHelper.getTransaksiList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTransaksiList().then((list) {
+      setState(() {
+        transaksiList = list;
+      });
+    });
+  }
+
   Future<void> _deleteTransaksi(Transaksi transaksi) async {
     if (widget.allTransaksi != null && widget.allTransaksi.isNotEmpty) {
-      // Cek apakah transaksi yang akan dihapus ada dalam daftar
       final isTransactionFound =
           widget.allTransaksi.any((t) => t.id == transaksi.id);
 
       if (isTransactionFound) {
-        // Hapus transaksi dari database
         await widget.dbHelper.deleteTransaksi(transaksi.id!);
 
-        // Hapus transaksi dari daftar
         setState(() {
           widget.allTransaksi.remove(transaksi);
         });
 
-        // Jika daftar transaksi menjadi kosong, tampilkan pesan "Tidak ada transaksi."
         if (widget.allTransaksi.isEmpty) {
           setState(() {});
         }
@@ -67,6 +77,15 @@ class _DetailCashFlowState extends State<DetailCashFlow> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detail Cash Flow"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(transaksiList: transaksiList),
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -74,9 +93,7 @@ class _DetailCashFlowState extends State<DetailCashFlow> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Add your existing Card here for the overall layout
 
-              // Add a title for the list of transactions
               const Text(
                 'Daftar Transaksi',
                 style: TextStyle(
@@ -85,7 +102,6 @@ class _DetailCashFlowState extends State<DetailCashFlow> {
                 ),
               ),
 
-              // Create a ListView.builder to display allTransaksi
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: widget.allTransaksi.length + 1,
@@ -112,7 +128,7 @@ class _DetailCashFlowState extends State<DetailCashFlow> {
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment
-                                .spaceBetween, // Untuk menyusun ikon dan menu pop-up di kanan atas
+                                .spaceBetween, 
                             children: [
                               Row(
                                 children: [
@@ -192,43 +208,48 @@ class _DetailCashFlowState extends State<DetailCashFlow> {
                 height: 20,
               ),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => TransaksiPage(),
+              Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TransaksiPage(),
+                        ),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.green[900]),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 40.0)),
+                      side: MaterialStateProperty.all(const BorderSide(
+                        color: Colors.black,
+                        width: 2.0,
+                      )),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                      textStyle: MaterialStateProperty.all<TextStyle>(
+                        const TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  );
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.green[900]),
-                  minimumSize: MaterialStateProperty.all(
-                      const Size(double.infinity, 40.0)),
-                  side: MaterialStateProperty.all(const BorderSide(
-                    color: Colors.black,
-                    width: 2.0,
-                  )),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                    child: const Text(
+                      'Tambah Data',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  textStyle: MaterialStateProperty.all<TextStyle>(
-                    const TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                child: const Text(
-                  'Tambah Data',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                ],
               ),
             ],
           ),

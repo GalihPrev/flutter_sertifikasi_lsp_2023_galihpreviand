@@ -3,11 +3,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/quickalert.dart';
 
 import '../DBHelper/DBHelper.dart';
 import '../models/transaksi.dart';
 import '../providers/user_provider.dart';
-import 'profile.dart'; // Import halaman profil
+import 'detailCashFlow.dart';
+import 'profile.dart'; 
 import 'tambahTransaksi.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,23 +22,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final DBHelper dbHelper = DBHelper();
   double iconSize = 64.0;
   double totalPengeluaran = 0.0;
   double totalPemasukkan = 0.0;
+  List<Transaksi> transaksiList = [];
+
+  Future<List<Transaksi>> fetchTransaksiList() async {
+    return await dbHelper.getTransaksiList();
+  }
 
   @override
   void initState() {
     super.initState();
-    // Hitung total pengeluaran dan pemasukkan saat halaman diinisialisasi
-    totalPengeluaran = calculateTotalPengeluaran();
-    totalPemasukkan = calculateTotalPemasukkan();
+    fetchTransaksiList().then((list) {
+      setState(() {
+        transaksiList = list;
+        totalPengeluaran = calculateTotalPengeluaran();
+        totalPemasukkan = calculateTotalPemasukkan();
+      });
+    });
   }
 
   @override
   void didUpdateWidget(covariant HomePage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.transaksiList != oldWidget.transaksiList) {
-      // Total pengeluaran dan pemasukkan diperbarui jika transaksiList berubah
       totalPengeluaran = calculateTotalPengeluaran();
       totalPemasukkan = calculateTotalPemasukkan();
     }
@@ -68,6 +79,34 @@ class _HomePageState extends State<HomePage> {
     return currencyFormat.format(amount);
   }
 
+  Future<void> _navigateToDetailCashFlow() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailCashFlow(
+          transaksiList: transaksiList,
+          transaksi: transaksiList.last,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      if (result == "update") {
+        setState(() {
+          transaksiList = fetchTransaksiList() as List<Transaksi>;
+          totalPengeluaran = calculateTotalPengeluaran();
+          totalPemasukkan = calculateTotalPemasukkan();
+        });
+      } else if (result is Transaksi) {
+        setState(() {
+          transaksiList.add(result);
+          totalPengeluaran = calculateTotalPengeluaran();
+          totalPemasukkan = calculateTotalPemasukkan();
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -92,9 +131,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              // cek user yang login by username
-              
-             Text(userProvider.user!.username!),
+
+              // Text(userProvider.user!.username!),
               const SizedBox(height: 8.0),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -190,43 +228,71 @@ class _HomePageState extends State<HomePage> {
                   right: 30,
                 ),
                 child: SizedBox(
-                  width: double.infinity,
-                  height: 200.0,
-                  child: LineChart(
-                    LineChartData(
-                      gridData: FlGridData(show: false),
-                      titlesData: FlTitlesData(show: false),
-                      borderData: FlBorderData(
-                        show: true,
-                        border: Border.all(
-                          color: const Color(0xff37434d),
-                          width: 1,
+                    width: double.infinity,
+                    height: 200.0,
+                    child: LineChart(
+                      LineChartData(
+                        gridData: FlGridData(
+                          show: false,
                         ),
+                        titlesData: FlTitlesData(
+                          show: false,
+                        ),
+                        borderData: FlBorderData(
+                          show: true,
+                          border: Border.all(
+                            color: const Color(0xff37434d),
+                            width: 1,
+                          ),
+                        ),
+                        minX: 0,
+                        maxX: 6, 
+                        minY: 0,
+                        maxY: 6,
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: [
+                              FlSpot(0, 3),
+                              FlSpot(1, 1),
+                              FlSpot(2, 4),
+                              FlSpot(3, 2),
+                              FlSpot(4, 5),
+                              FlSpot(5, 1),
+                              FlSpot(6, 4),
+                            ],
+                            isCurved: true,
+                            colors: [
+                              Color.fromARGB(255, 14, 118, 238), 
+                            ],
+                            belowBarData: BarAreaData(
+                              show: false,
+                            ),
+                            dotData: FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) {
+                                Color color;
+                                double radius;
+
+                                if (spot.x == 4) {
+                                  color = Color.fromARGB(255, 0, 243, 113);
+                                  radius = 6;
+                                } else {
+                                  color = const Color(0xff4af699);
+                                  radius = 4;
+                                }
+
+                                return FlDotCirclePainter(
+                                  radius: radius,
+                                  color: color,
+                                  strokeWidth: 2,
+                                  strokeColor: const Color(0xff37434d),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      minX: 0,
-                      maxX: 7,
-                      minY: 0,
-                      maxY: 6,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: [
-                            const FlSpot(0, 3),
-                            const FlSpot(1, 1),
-                            const FlSpot(2, 4),
-                            const FlSpot(3, 2),
-                            const FlSpot(4, 5),
-                            const FlSpot(5, 1),
-                            const FlSpot(6, 4),
-                          ],
-                          isCurved: true,
-                          colors: [Colors.blue],
-                          dotData: FlDotData(show: false),
-                          belowBarData: BarAreaData(show: false),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                    )),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -253,9 +319,14 @@ class _HomePageState extends State<HomePage> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
-                                      Icons.attach_money,
-                                      size: iconSize,
+                                    SizedBox(
+                                      width: iconSize,
+                                      height: iconSize,
+                                      child: Image.asset(
+                                        'assets/images/transaksi.png',
+                                        width: iconSize,
+                                        height: iconSize,
+                                      ),
                                     ),
                                     const SizedBox(height: 8.0),
                                     const Text(
@@ -274,21 +345,37 @@ class _HomePageState extends State<HomePage> {
                             child: SizedBox(
                               width: 150.0,
                               height: 150.0,
-                              child: InkWell(
+                              child: TextButton(
+                                onPressed: () {
+                                  if (transaksiList.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailCashFlow(
+                                          transaksiList: transaksiList,
+                                          transaksi: transaksiList.last,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    _showEmptyTransaksiAlert(context);
+                                  }
+                                },
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     SizedBox(
                                       width: iconSize,
                                       height: iconSize,
-                                      child: Icon(
-                                        Icons.search,
-                                        size: iconSize,
+                                      child: Image.asset(
+                                        'assets/images/audit.png',
+                                        width: iconSize,
+                                        height: iconSize,
                                       ),
                                     ),
                                     const SizedBox(height: 8.0),
                                     const Text(
-                                      'Search',
+                                      'Detail Cash Flow',
                                       style: TextStyle(fontSize: 16.0),
                                     ),
                                   ],
@@ -340,7 +427,6 @@ class _HomePageState extends State<HomePage> {
                                 height: 150.0,
                                 child: InkWell(
                                   onTap: () {
-                                    // Ganti halaman ke halaman profil (ProfilePage)
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -351,12 +437,13 @@ class _HomePageState extends State<HomePage> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Container(
+                                      SizedBox(
                                         width: iconSize,
                                         height: iconSize,
-                                        child: Icon(
-                                          Icons.settings,
-                                          size: iconSize,
+                                        child: Image.asset(
+                                          'assets/images/management.png',
+                                          width: iconSize,
+                                          height: iconSize,
                                         ),
                                       ),
                                       const SizedBox(height: 8.0),
@@ -380,6 +467,15 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showEmptyTransaksiAlert(BuildContext context) {
+    QuickAlert.show(
+      context: context,
+      title: "Tidak Ada Transaksi",
+      text: "Daftar transaksi masih kosong.",
+      type: QuickAlertType.info,
     );
   }
 }

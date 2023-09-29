@@ -111,7 +111,6 @@ class _TransaksiPageState extends State<TransaksiPage> {
         ),
       ),
       body: Container(
-        // Letakkan SingleChildScrollview di sini
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -164,9 +163,9 @@ class _TransaksiPageState extends State<TransaksiPage> {
                     ),
                     const SizedBox(
                         width:
-                            10), // Spasi antara kotak tanggal dan ikon kalender
+                            10),
                     InkWell(
-                      // Menggunakan InkWell untuk ikon kalender
+                  
                       onTap: () => _selectDate(context),
                       child: const Icon(
                         FontAwesomeIcons.calendarAlt,
@@ -227,7 +226,7 @@ class _TransaksiPageState extends State<TransaksiPage> {
                 Column(
                   children: [
                     SizedBox(
-                      height: 48.0, // Adjust the height for spacing
+                      height: 48.0, 
                       child: ElevatedButton(
                         onPressed: () async {
                           await _saveTransaksi();
@@ -263,9 +262,9 @@ class _TransaksiPageState extends State<TransaksiPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16.0), // Add spacing
+                    const SizedBox(height: 16.0), 
                     SizedBox(
-                      height: 48.0, // Adjust the height for spacing
+                      height: 48.0,
                       child: ElevatedButton(
                         onPressed: () {
                           nominalController.clear();
@@ -298,57 +297,66 @@ class _TransaksiPageState extends State<TransaksiPage> {
                             ),
                           ),
                         ),
-                        child: const Text('Reset'),
-                      ),
-                    ),
-                    const SizedBox(height: 20.0), // Add spacing
-                    SizedBox(
-                      height: 48.0, // Adjust the height for spacing
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailCashFlow(
-                                transaksiList: transaksiList,
-                                transaksi: transaksiList.last,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.green[900]),
-                          minimumSize: MaterialStateProperty.all(
-                              const Size(double.infinity, 40.0)),
-                          side: MaterialStateProperty.all(const BorderSide(
-                            color: Colors.black,
-                            width: 2.0,
-                          )),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                          ),
-                          textStyle: MaterialStateProperty.all<TextStyle>(
-                            const TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
                         child: const Text(
-                          'Lihat Detail Transaksi Terakhir',
+                          'Reset',
                           style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20.0), 
+                    // SizedBox(
+                    //   height: 48.0, // Adjust the height for spacing
+                    //   child: ElevatedButton(
+                    //     onPressed: () {
+                    //       if (transaksiList.isNotEmpty) {
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //             builder: (context) => DetailCashFlow(
+                    //               transaksiList: transaksiList,
+                    //               transaksi: transaksiList.last,
+                    //             ),
+                    //           ),
+                    //         );
+                    //       } else {
+                    //         _showEmptyTransaksiAlert(context);
+                    //       }
+                    //     },
+                    //     style: ButtonStyle(
+                    //       backgroundColor:
+                    //           MaterialStateProperty.all(Colors.green[900]),
+                    //       minimumSize: MaterialStateProperty.all(
+                    //           const Size(double.infinity, 40.0)),
+                    //       side: MaterialStateProperty.all(const BorderSide(
+                    //         color: Colors.black,
+                    //         width: 2.0,
+                    //       )),
+                    //       shape:
+                    //           MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //         RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(8.0),
+                    //         ),
+                    //       ),
+                    //       textStyle: MaterialStateProperty.all<TextStyle>(
+                    //         const TextStyle(
+                    //           fontSize: 16.0,
+                    //           fontWeight: FontWeight.bold,
+                    //           color: Colors.white,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     child: const Text(
+                    //       'Lihat Detail Transaksi Terakhir',
+                    //       style: TextStyle(
+                    //         fontSize: 16.0,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: Colors.white,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -359,7 +367,7 @@ class _TransaksiPageState extends State<TransaksiPage> {
     );
   }
 
- void _showSuccessAlert(BuildContext context, String jenisTransaksi) {
+  void _showSuccessAlert(BuildContext context, String jenisTransaksi) {
     String transaksiText =
         jenisTransaksi == 'Pemasukan' ? 'Pemasukan' : 'Pengeluaran';
     QuickAlert.show(
@@ -368,7 +376,6 @@ class _TransaksiPageState extends State<TransaksiPage> {
       text: "Anda telah menambahkan transaksi $transaksiText.",
       type: QuickAlertType.success,
     ).then((_) {
-      // Navigate to the home page when OK is pressed
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -380,12 +387,22 @@ class _TransaksiPageState extends State<TransaksiPage> {
       );
     });
   }
+
   void _showErrorAlert(BuildContext context) {
     QuickAlert.show(
       context: context,
       title: "Gagal Tambah Transaksi",
       text: "Nominal Wajib diisikan!",
       type: QuickAlertType.error,
+    );
+  }
+
+  void _showEmptyTransaksiAlert(BuildContext context) {
+    QuickAlert.show(
+      context: context,
+      title: "Tidak Ada Transaksi",
+      text: "Daftar transaksi masih kosong.",
+      type: QuickAlertType.info,
     );
   }
 }

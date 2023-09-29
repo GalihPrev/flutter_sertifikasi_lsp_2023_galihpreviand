@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/quickalert.dart';
 
+import '../Auth/login.dart';
 import '../DBHelper/DBHelper.dart';
 import '../models/user.dart';
 import '../providers/user_provider.dart';
+import 'home.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -15,16 +18,15 @@ class _ProfileState extends State<Profile> {
   TextEditingController newPasswordController = TextEditingController();
 
   String developerName = "Galih Previand Wicaksono";
-  String developerNim = "NIM Anda";
+  String developerNim = "2141764040";
 
   final DBHelper dbHelper = DBHelper();
 
-  bool _isCurrentPasswordVisible = false; // Tambahkan variabel ini
-  bool _isNewPasswordVisible = false; // Tambahkan variabel ini
+  bool _isCurrentPasswordVisible = false; 
+  bool _isNewPasswordVisible = false; 
 
   @override
   Widget build(BuildContext context) {
-    // Access the UserProvider to get user data
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
     return Scaffold(
@@ -70,7 +72,7 @@ class _ProfileState extends State<Profile> {
                   Text(
                     developerNim,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       color: Colors.grey,
                     ),
                   ),
@@ -87,7 +89,7 @@ class _ProfileState extends State<Profile> {
               TextField(
                 controller: currentPasswordController,
                 obscureText:
-                    !_isCurrentPasswordVisible, // Toggle visibilitas teks
+                    !_isCurrentPasswordVisible, 
                 decoration: InputDecoration(
                   labelText: "Password Saat Ini",
                   suffixIcon: IconButton(
@@ -106,7 +108,7 @@ class _ProfileState extends State<Profile> {
               ),
               TextField(
                 controller: newPasswordController,
-                obscureText: !_isNewPasswordVisible, // Toggle visibilitas teks
+                obscureText: !_isNewPasswordVisible, 
                 decoration: InputDecoration(
                   labelText: "Password Baru",
                   suffixIcon: IconButton(
@@ -137,31 +139,42 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  void _showSuccessAlert(BuildContext context) {
+    try {
+      QuickAlert.show(
+        context: context,
+        title: "Ganti Password Berhasil",
+        type: QuickAlertType.success,
+      ).then((_) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      });
+    } catch (e) {
+      print("Error while showing success alert: $e");
+      
+    }
+  }
+
   void _changePassword(User user) {
     String currentPasswordInput = currentPasswordController.text;
     String newPasswordInput = newPasswordController.text;
 
     if (currentPasswordInput == user.password) {
       if (currentPasswordInput != newPasswordInput) {
-        // Password saat ini benar, simpan password baru
         dbHelper.changePassword(user.username!, newPasswordInput);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Password berhasil diubah."),
-        ));
+        _showSuccessAlert(context);
       } else {
-        // Password baru sama dengan password lama
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text("Password baru tidak boleh 4sama dengan password lama."),
         ));
       }
     } else {
-      // Password saat ini salah
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Password saat ini salah. Ubah password gagal."),
       ));
     }
   }
-
-  
 }

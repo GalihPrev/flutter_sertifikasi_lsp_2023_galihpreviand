@@ -11,13 +11,16 @@ import 'providers/user_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider<UserProvider>(
-      create: (context) => UserProvider(), // Replace with your actual provider
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => UserProvider(),
+        ),
+      ],
       child: MyApp(),
     ),
   );
 }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
